@@ -1474,6 +1474,11 @@ static int producer_conf_set_special (Handle *self, rd_kafka_conf_t *conf,
 static int consumer_conf_set_special (Handle *self, rd_kafka_conf_t *conf,
 				      const char *name, PyObject *valobj) {
 
+        /* `handle` case where on_commit was set to Py_None */
+        if (valobj == Py_None) {
+                return 1;
+        }
+
 	if (!strcmp(name, "on_commit")) {
 		if (!PyCallable_Check(valobj)) {
 			cfl_PyErr_Format(
@@ -2353,6 +2358,7 @@ static PyObject *_init_cimpl (void) {
         PyModule_AddIntConstant(m, "OFFSET_STORED", RD_KAFKA_OFFSET_STORED);
         PyModule_AddIntConstant(m, "OFFSET_INVALID", RD_KAFKA_OFFSET_INVALID);
 
+	PyModule_AddIntConstant(m, "PARTITION_UA", RD_KAFKA_PARTITION_UA);
 	return m;
 }
 
